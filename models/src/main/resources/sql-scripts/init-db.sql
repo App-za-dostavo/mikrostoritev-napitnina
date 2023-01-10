@@ -1,0 +1,1 @@
+INSERT INTO napitnina (client, order, tipValue) VALUES (1, 1, 10.1);

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: napitnina-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: napitnina
+  template:
+    metadata:
+      labels:
+        app: napitnina
+    spec:
+      containers:
+        - image: veronikasovdat/napitnina
+          name: napitnina
+          env:
+            - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
+              value: jdbc:postgresql://hansken.db.elephantsql.com:5432/ictvwncx
+            - name: KUMULUZEE_DATASOURCES0_USERNAME
+              value: ictvwncx
+            - name: KUMULUZEE_DATASOURCES0_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password
+                  key: KUMULUZEE_DATASOURCES0_PASSWORD
+          ports:
+            - containerPort: 8080
+              name: server
+              protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: napitnina
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: server
+  selector:
+    app: napitnina
